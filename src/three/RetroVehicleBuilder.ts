@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {
   PAINT_SWATCHES,
+  VEHICLE_SPECS,
   VehicleCustomization,
   WheelStyleId,
   TireStyleId,
@@ -248,13 +249,13 @@ export function buildRetroVehicle(config: VehicleCustomization): BuiltVehicleMes
     metalness: 0.02,
   });
 
-  const isLong = config.vehicleId === 'expedition_wagon' || config.vehicleId === 'camping_rig';
-  const isOpenTop = config.vehicleId === 'open_top';
-  const isCamper = config.vehicleId === 'camping_rig';
-
-  const wb = isLong ? 2.72 : 2.32;
+  const spec = VEHICLE_SPECS.find((v) => v.id === config.vehicleId) || VEHICLE_SPECS[0];
+  const isLong = ['expedition_wagon', 'camping_rig', 'wagoneer_1968', 'k5_blazer', 'defender_110', 'peugeot_504', 'landcruiser_80', 'type2_van'].includes(config.vehicleId);
+  const isOpenTop = config.vehicleId === 'open_top' || config.vehicleId === 'bronco_1966' || config.vehicleId === 'scout_1972' || config.vehicleId === 'landcruiser_40' || config.vehicleId === 'k5_blazer';
+  const isCamper = config.vehicleId === 'camping_rig' || config.vehicleId === 'type2_van';
+  const wb = spec.wheelbase;
   const halfWb = wb / 2;
-  const track = isLong ? 1.54 : 1.48;
+  const track = spec.trackWidth;
   const halfTrack = track / 2;
 
   // 1. Ladder Frame Chassis & Solid Axles + Differentials (Visible underneath!)
@@ -282,8 +283,8 @@ export function buildRetroVehicle(config: VehicleCustomization): BuiltVehicleMes
   });
 
   // 2. Lower Tub / Body Sill with rounded vintage curves
-  const bodyLength = isLong ? 3.55 : 3.05;
-  const bodyWidth = 1.44;
+  const bodyLength = Math.max(2.75, wb + 0.82);
+  const bodyWidth = config.vehicleId === 'datsun_240z' || config.vehicleId === 'escort_rs' || config.vehicleId === 'citroen_2cv' || config.vehicleId === 'peugeot_504' ? 1.34 : track * 0.96;
   const lowerTubGeo = createRoundedBox(bodyWidth, 0.54, bodyLength * 0.66, 0.14, 4);
   const lowerTub = new THREE.Mesh(lowerTubGeo, bodyMat);
   lowerTub.position.set(0, 0.92, -0.22);
@@ -843,6 +844,43 @@ export function buildRetroVehicle(config: VehicleCustomization): BuiltVehicleMes
         can.position.set(0.32, 0.16, zCan - 0.18);
         can.castShadow = true;
         rackGroup.add(can);
+      });
+    }
+
+    if (config.roofAccessory === 'roof_cargo_box') {
+      const boxMat = new THREE.MeshStandardMaterial({ color: 0x343936, roughness: 0.42, metalness: 0.22 });
+      const box = new THREE.Mesh(createRoundedBox(rackWidth * 0.82, 0.36, rackLength * 0.82, 0.12, 5), boxMat);
+      box.position.y = 0.2; box.castShadow = true; rackGroup.add(box);
+      const lidSeam = new THREE.Mesh(new THREE.BoxGeometry(rackWidth * 0.78, 0.018, 0.76), darkSteelMat);
+      lidSeam.position.set(0, 0.385, 0); rackGroup.add(lidSeam);
+    }
+
+    if (config.roofAccessory === 'safari_basket') {
+      const basketFloor = new THREE.Mesh(new THREE.BoxGeometry(rackWidth * 0.9, 0.06, rackLength * 0.9), darkSteelMat);
+      basketFloor.position.y = 0.09; rackGroup.add(basketFloor);
+      const basketRail = new THREE.CylinderGeometry(0.024, 0.024, rackLength * 0.9, 8);
+      basketRail.rotateX(Math.PI / 2);
+      [-rackWidth * 0.44, rackWidth * 0.44].forEach((x) => {
+        const rail = new THREE.Mesh(basketRail, chromeMat); rail.position.set(x, 0.22, 0); rackGroup.add(rail);
+      });
+      [-rackLength * 0.45, rackLength * 0.45].forEach((z) => {
+        const rail = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, rackWidth * 0.9, 8), chromeMat);
+        rail.rotation.z = Math.PI / 2; rail.position.set(0, 0.22, z); rackGroup.add(rail);
+      });
+      for (let i = 0; i < 3; i++) {
+        const slat = new THREE.Mesh(new THREE.BoxGeometry(rackWidth * 0.82, 0.035, 0.08), secondaryMat);
+        slat.position.set(0, 0.14, -rackLength * 0.3 + i * rackLength * 0.3); rackGroup.add(slat);
+      }
+    }
+
+    if (config.roofAccessory === 'side_awning') {
+      const awningRoll = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, rackLength * 0.86, 12), darkSteelMat);
+      awningRoll.rotation.x = Math.PI / 2; awningRoll.position.set(bodyWidth * 0.55, 0.06, 0); rackGroup.add(awningRoll);
+      const fabric = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.045, rackLength * 0.78), canvasMat);
+      fabric.position.set(bodyWidth * 0.55 + 0.45, 0.02, 0); fabric.castShadow = true; rackGroup.add(fabric);
+      [-rackLength * 0.34, rackLength * 0.34].forEach((z) => {
+        const support = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 1.45, 8), darkSteelMat);
+        support.position.set(bodyWidth * 0.55 + 0.9, -0.68, z); rackGroup.add(support);
       });
     }
 
