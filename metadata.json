@@ -1,0 +1,6 @@
+{
+  "name": "Over the Ridge: Retro Off-Road Expedition",
+  "description": "Stylized 3D retro 4x4 off-road exploration game featuring vintage trail vehicles, physics-driven winching, articulated trailers, wildlife photography, and golden mountain trails.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
