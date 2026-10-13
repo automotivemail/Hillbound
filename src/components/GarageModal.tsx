@@ -299,6 +299,9 @@ export const GarageModal: React.FC<GarageModalProps> = ({
                     { id: 'expedition_rack', label: 'Cargo Box & Duffel' },
                     { id: 'jerry_cans_boxes', label: 'Fuel Cans & Boxes' },
                     { id: 'rooftop_tent', label: 'Overland Roof Tent' },
+                    { id: 'roof_cargo_box', label: 'Hard-Shell Cargo Box' },
+                    { id: 'safari_basket', label: 'Safari Basket Rack' },
+                    { id: 'side_awning', label: 'Side-Mounted Awning' },
                   ] as { id: RoofAccessoryId; label: string }[]
                 ).map((r) => (
                   <button
