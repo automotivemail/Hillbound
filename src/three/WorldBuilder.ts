@@ -666,6 +666,13 @@ export function buildStylizedWorld(): WorldEnvironment {
     const ring = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.62, 32), rippleMat.clone());
     ring.rotation.x = -Math.PI / 2; ring.position.set(rx, WATER_LEVEL + 0.09 + i * 0.004, rz);
     ring.userData = { phase: i * 1.7, baseScale: 1 + i * 0.18 };
+    ring.onBeforeRender = () => {
+      const t = (performance.now() * 0.00022 + ring.userData.phase) % 1;
+      const scale = ring.userData.baseScale * (0.7 + t * 1.65);
+      ring.scale.set(scale, scale, scale);
+      const material = ring.material as THREE.MeshBasicMaterial;
+      material.opacity = 0.28 * (1 - t);
+    };
     group.add(ring); rippleRings.push(ring);
   });
 
