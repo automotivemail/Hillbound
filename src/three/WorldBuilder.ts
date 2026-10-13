@@ -537,6 +537,138 @@ export function buildStylizedWorld(): WorldEnvironment {
   signBoard.position.set(ovX, ovY + 2.1, ovZ);
   group.add(signBoard);
 
+
+  // 7. Scenic settlement: two timber cabins, a small workshop and trail furniture.
+  // These props deliberately sit away from the main driving line and landmark trigger zones.
+  const cabinWood = new THREE.MeshStandardMaterial({ color: 0x765039, roughness: 0.92 });
+  const cabinDarkWood = new THREE.MeshStandardMaterial({ color: 0x3c3028, roughness: 0.9 });
+  const cabinGlass = new THREE.MeshStandardMaterial({
+    color: 0x9fc6cc, roughness: 0.22, metalness: 0.12,
+    emissive: 0x213b40, emissiveIntensity: 0.18,
+  });
+  const stoneMat = new THREE.MeshStandardMaterial({ color: 0x77736a, roughness: 1 });
+  const housePlacements = [
+    { x: -89, z: -43, s: 0.82, rot: -0.35 },
+    { x: 34, z: -88, s: 0.92, rot: 0.62 },
+    { x: 71, z: 17, s: 0.72, rot: -0.5 },
+  ];
+  housePlacements.forEach((p, idx) => {
+    const hy = getTerrainHeight(p.x, p.z);
+    const house = new THREE.Group();
+    house.position.set(p.x, hy, p.z);
+    house.rotation.y = p.rot;
+    house.scale.setScalar(p.s);
+    const body = new THREE.Mesh(createRoundedBox(4.8, 2.8, 4.2, 0.1, 2), cabinWood);
+    body.position.y = 1.45; body.castShadow = true; body.receiveShadow = true; house.add(body);
+    const roof = new THREE.Mesh(new THREE.ConeGeometry(3.9, 2.15, 4), cabinDarkWood);
+    roof.rotation.y = Math.PI / 4; roof.position.y = 3.82; roof.scale.set(1.18, 1, 1.05);
+    roof.castShadow = true; house.add(roof);
+    for (const side of [-1, 1]) {
+      const windowPane = new THREE.Mesh(new THREE.BoxGeometry(0.88, 0.72, 0.08), cabinGlass);
+      windowPane.position.set(side * 1.28, 1.72, 2.13); house.add(windowPane);
+      const sill = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.09, 0.15), cabinDarkWood);
+      sill.position.set(side * 1.28, 1.31, 2.15); house.add(sill);
+    }
+    const door = new THREE.Mesh(new THREE.BoxGeometry(0.78, 1.8, 0.12), cabinDarkWood);
+    door.position.set(0, 0.95, 2.16); house.add(door);
+    const chimney = new THREE.Mesh(new THREE.BoxGeometry(0.48, 1.4, 0.48), stoneMat);
+    chimney.position.set(1.25, 4.05, -0.75); house.add(chimney);
+    group.add(house);
+    colliders.push({ x: p.x, z: p.z, radius: 3.1 * p.s });
+    // A small woodpile and a trail-side lamp add scale and life to the settlement.
+    for (let j = 0; j < 4; j++) {
+      const log = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 1.1, 7), cabinWood);
+      log.rotation.z = Math.PI / 2;
+      log.position.set(p.x + 3.1 + (j % 2) * 0.18, hy + 0.22 + Math.floor(j / 2) * 0.2, p.z + 1.2);
+      group.add(log);
+    }
+  });
+
+  // Fallen timber and cut stumps around forest clearings; varied rings make them read as wood.
+  const stumpBark = new THREE.MeshStandardMaterial({ color: 0x59402c, roughness: 1 });
+  const stumpCut = new THREE.MeshStandardMaterial({ color: 0xb99a6c, roughness: 0.96 });
+  const stumpRing = new THREE.MeshStandardMaterial({ color: 0x806344, roughness: 1 });
+  const stumpSpots = [
+    [-36, 5], [-28, -18], [5, -39], [41, -21], [62, 61], [-88, 20],
+    [-76, 76], [16, 73], [93, -19], [-31, -78], [57, -102], [-104, -62],
+    [-45, 37], [-64, 31], [-36, 83], [2, 48], [79, 68], [-98, 4],
+  ];
+  stumpSpots.forEach(([sx, sz], i) => {
+    if (getTrailFactor(sx, sz) > 0.3 || Math.hypot(sx - 18, sz - 22) < 13) return;
+    const sy = getTerrainHeight(sx, sz);
+    const radius = 0.22 + (i % 4) * 0.055;
+    const height = 0.32 + (i % 3) * 0.12;
+    const stump = new THREE.Group();
+    stump.position.set(sx, sy, sz);
+    stump.rotation.y = i * 0.71;
+    const bark = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.92, radius * 1.18, height, 9), stumpBark);
+    bark.position.y = height / 2; bark.castShadow = true; stump.add(bark);
+    const cut = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.86, radius * 0.86, 0.035, 9), stumpCut);
+    cut.position.y = height + 0.012; stump.add(cut);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(radius * 0.48, 0.012, 5, 12), stumpRing);
+    ring.rotation.x = Math.PI / 2; ring.position.y = height + 0.034; stump.add(ring);
+    group.add(stump);
+    colliders.push({ x: sx, z: sz, radius: radius * 1.2 });
+  });
+
+  // An A-frame shelter and split-rail fencing beside the upper trail.
+  const aframe = new THREE.Group();
+  const ax = -22, az = -47, ay = getTerrainHeight(ax, az);
+  aframe.position.set(ax, ay, az); aframe.rotation.y = -0.25; group.add(aframe);
+  const canvasMat = new THREE.MeshStandardMaterial({ color: 0xc4b08b, roughness: 0.98, side: THREE.DoubleSide });
+  const frameMat = new THREE.MeshStandardMaterial({ color: 0x4e3928, roughness: 0.95 });
+  const tentShape = new THREE.BufferGeometry();
+  const tentVerts = new Float32Array([
+    -1.55, 0, 0.9,  1.55, 0, 0.9,  0, 2.15, 0.9,
+    -1.55, 0, -0.9, 0, 2.15, -0.9, 1.55, 0, -0.9,
+    -1.55, 0, 0.9, 0, 2.15, 0.9, 0, 2.15, -0.9,
+    1.55, 0, 0.9, 1.55, 0, -0.9, 0, 2.15, 0.9,
+  ]);
+  tentShape.setAttribute('position', new THREE.BufferAttribute(tentVerts, 3)); tentShape.computeVertexNormals();
+  const shelter = new THREE.Mesh(tentShape, canvasMat); shelter.castShadow = true; aframe.add(shelter);
+  [-1.5, 1.5].forEach((x) => {
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.065, 2.2, 6), frameMat);
+    pole.position.set(x, 1.05, 0); pole.rotation.z = x < 0 ? -0.95 : 0.95; aframe.add(pole);
+  });
+  for (let i = 0; i < 5; i++) {
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.11, 0.9, 6), cabinWood);
+    post.position.set(-5 + i * 1.4, 0.45, 3.8); aframe.add(post);
+    if (i < 4) {
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.11, 0.11), cabinWood);
+      rail.position.set(-4.3 + i * 1.4, 0.6, 3.8); aframe.add(rail);
+      rail.position.y = 0.3; const rail2 = rail.clone(); rail2.position.x = -4.3 + i * 1.4; aframe.add(rail2);
+    }
+  }
+
+  // Upgrade the existing lake with a layered, reflective pond edge and animated-looking ripple rings.
+  // The rings are low-cost geometry and remain visible even on modest hardware.
+  const pondEdgeMat = new THREE.MeshStandardMaterial({ color: 0x756d58, roughness: 0.98 });
+  const reedMat = new THREE.MeshStandardMaterial({ color: 0x7f8b50, roughness: 0.9 });
+  const rippleMat = new THREE.MeshBasicMaterial({ color: 0xb8dce0, transparent: true, opacity: 0.25, side: THREE.DoubleSide });
+  const pondX = -55, pondZ = 62;
+  for (let i = 0; i < 26; i++) {
+    const angle = (i / 26) * Math.PI * 2;
+    const rx = pondX + Math.cos(angle) * (18 + (i % 3) * 1.2);
+    const rz = pondZ + Math.sin(angle) * (13 + (i % 4) * 0.8);
+    const ry = Math.max(WATER_LEVEL + 0.06, getTerrainHeight(rx, rz) + 0.04);
+    const pebble = new THREE.Mesh(new THREE.DodecahedronGeometry(0.35 + (i % 3) * 0.13, 0), pondEdgeMat);
+    pebble.position.set(rx, ry, rz); pebble.scale.y = 0.45; pebble.rotation.y = angle; pebble.castShadow = true; group.add(pebble);
+    if (i % 2 === 0) {
+      const reeds = new THREE.Group(); reeds.position.set(rx + 0.3, ry, rz - 0.2); group.add(reeds);
+      for (let j = 0; j < 3; j++) {
+        const blade = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.75 + j * 0.12, 5), reedMat);
+        blade.position.set((j - 1) * 0.12, 0.36, (j % 2) * 0.1); blade.rotation.z = (j - 1) * 0.12; reeds.add(blade);
+      }
+    }
+  }
+  const rippleRings: THREE.Mesh[] = [];
+  [[-53, 60], [-59, 65], [-49, 66], [-61, 58]].forEach(([rx, rz], i) => {
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.62, 32), rippleMat.clone());
+    ring.rotation.x = -Math.PI / 2; ring.position.set(rx, WATER_LEVEL + 0.09 + i * 0.004, rz);
+    ring.userData = { phase: i * 1.7, baseScale: 1 + i * 0.18 };
+    group.add(ring); rippleRings.push(ring);
+  });
+
   return {
     group,
     winchAnchors,
