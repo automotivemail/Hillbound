@@ -1,4 +1,4 @@
-export type VehicleId = 'trail_jeep' | 'expedition_wagon' | 'open_top' | 'camping_rig';
+export type VehicleId = 'trail_jeep' | 'expedition_wagon' | 'open_top' | 'camping_rig' | 'bronco_1966' | 'scout_1972' | 'wagoneer_1968' | 'landcruiser_40' | 'k5_blazer' | 'datsun_240z' | 'type2_van' | 'defender_110' | 'pajero_1985' | 'lada_niva' | 'peugeot_504' | 'escort_rs' | 'citroen_2cv' | 'impreza_wrx' | 'lancer_evo' | 'landcruiser_80';
 
 export type PaintColorId =
   | 'olive_green'
@@ -12,7 +12,7 @@ export type PaintColorId =
 export type WheelStyleId = 'steel_classic' | 'spoked_rally' | 'heavy_beadlock';
 export type TireStyleId = 'all_terrain' | 'mud_knobby' | 'vintage_ribbed';
 export type BumperStyleId = 'tubular_vintage' | 'heavy_expedition' | 'brush_guard';
-export type RoofAccessoryId = 'none' | 'expedition_rack' | 'jerry_cans_boxes' | 'rooftop_tent';
+export type RoofAccessoryId = 'none' | 'expedition_rack' | 'jerry_cans_boxes' | 'rooftop_tent' | 'roof_cargo_box' | 'safari_basket' | 'side_awning';
 export type TrailerTypeId = 'none' | 'utility_trailer' | 'teardrop_camper' | 'open_cargo' | 'recovery_rig';
 
 export interface VehicleCustomization {
@@ -139,6 +139,87 @@ export const PAINT_SWATCHES: PaintSwatch[] = [
 ];
 
 export const VEHICLE_SPECS: VehicleSpec[] = [
+  {
+    id: 'bronco_1966', name: '1966 Ford Bronco Gen I', subtitle: '1960s Compact 4x4', era: '1960s',
+    description: 'Short-wheelbase utility 4x4 with upright glass, chunky all-terrain tires and a removable-roof silhouette.',
+    wheelbase: 2.35, trackWidth: 1.48, powerRating: 105, gripFactor: 92, groundClearance: 94, defaultColor: 'muted_yellow', defaultRoof: 'safari_basket',
+  },
+  {
+    id: 'scout_1972', name: '1972 International Scout II', subtitle: '1970s Trail Utility', era: '1970s',
+    description: 'Square-shouldered two-door utility truck with a high stance and broad glasshouse.',
+    wheelbase: 2.55, trackWidth: 1.52, powerRating: 125, gripFactor: 91, groundClearance: 92, defaultColor: 'dusty_red', defaultRoof: 'expedition_rack',
+  },
+  {
+    id: 'wagoneer_1968', name: '1968 Jeep Wagoneer', subtitle: 'Heritage 4x4 Wagon', era: '1960s',
+    description: 'Long-roof family 4x4 with wood-trim character and comfortable touring proportions.',
+    wheelbase: 2.72, trackWidth: 1.54, powerRating: 115, gripFactor: 87, groundClearance: 82, defaultColor: 'vintage_cream', defaultRoof: 'roof_cargo_box',
+  },
+  {
+    id: 'landcruiser_40', name: '1978 Toyota Land Cruiser 40', subtitle: 'Classic Rock Crawler', era: '1970s',
+    description: 'Rugged short-wheelbase 4x4 with a tall stance and exposed recovery hardware.',
+    wheelbase: 2.32, trackWidth: 1.48, powerRating: 98, gripFactor: 96, groundClearance: 98, defaultColor: 'forest_green', defaultRoof: 'safari_basket',
+  },
+  {
+    id: 'k5_blazer', name: '1978 Chevrolet K5 Blazer', subtitle: 'Full-Size Trail SUV', era: '1970s',
+    description: 'Wide-track full-size utility with a long bonnet and removable-top profile.',
+    wheelbase: 2.78, trackWidth: 1.62, powerRating: 150, gripFactor: 88, groundClearance: 91, defaultColor: 'retro_orange', defaultRoof: 'expedition_rack',
+  },
+  {
+    id: 'datsun_240z', name: '1972 Datsun 240Z', subtitle: 'Rear-Wheel-Drive Sports Classic', era: '1970s · RWD',
+    description: 'Low fastback sports coupe with long bonnet, sloped glass and road-biased tires; best on dry trails.',
+    wheelbase: 2.30, trackWidth: 1.48, powerRating: 130, gripFactor: 72, groundClearance: 38, defaultColor: 'dusty_red', defaultRoof: 'none',
+  },
+  {
+    id: 'type2_van', name: '1974 Volkswagen Type 2', subtitle: 'Rear-Wheel-Drive Adventure Van', era: '1970s · RWD',
+    description: 'Cab-forward camper van with upright windshield, spacious cabin and modest ground clearance.',
+    wheelbase: 2.40, trackWidth: 1.52, powerRating: 65, gripFactor: 68, groundClearance: 45, defaultColor: 'pale_blue', defaultRoof: 'rooftop_tent',
+  },
+  {
+    id: 'defender_110', name: '1987 Land Rover Defender 110', subtitle: 'Expedition 4x4', era: '1980s',
+    description: 'Tall, slab-sided utility wagon with long-travel suspension and practical roof loadout.',
+    wheelbase: 2.80, trackWidth: 1.56, powerRating: 112, gripFactor: 97, groundClearance: 96, defaultColor: 'forest_green', defaultRoof: 'safari_basket',
+  },
+  {
+    id: 'pajero_1985', name: '1985 Mitsubishi Pajero', subtitle: 'Rally-Bred 4x4', era: '1980s',
+    description: 'Compact rally utility with balanced wheelbase and nimble mixed-terrain handling.',
+    wheelbase: 2.42, trackWidth: 1.52, powerRating: 105, gripFactor: 91, groundClearance: 88, defaultColor: 'vintage_cream', defaultRoof: 'expedition_rack',
+  },
+  {
+    id: 'lada_niva', name: '1982 Lada Niva', subtitle: 'Compact Mountain 4x4', era: '1980s',
+    description: 'Short, light-bodied compact 4x4 with upright greenhouse and narrow trail footprint.',
+    wheelbase: 2.20, trackWidth: 1.44, powerRating: 75, gripFactor: 89, groundClearance: 80, defaultColor: 'muted_yellow', defaultRoof: 'none',
+  },
+  {
+    id: 'peugeot_504', name: '1979 Peugeot 504', subtitle: 'Rear-Wheel-Drive Safari Saloon', era: '1970s · RWD',
+    description: 'Classic long-bonnet rear-drive saloon adapted for light safari tracks, not rock crawling.',
+    wheelbase: 2.74, trackWidth: 1.50, powerRating: 96, gripFactor: 66, groundClearance: 42, defaultColor: 'pale_blue', defaultRoof: 'none',
+  },
+  {
+    id: 'escort_rs', name: '1986 Ford Escort RS', subtitle: 'Rear-Wheel-Drive Rally Classic', era: '1980s · RWD',
+    description: 'Compact rally coupe with a low center of gravity and road-focused grip.',
+    wheelbase: 2.40, trackWidth: 1.50, powerRating: 130, gripFactor: 74, groundClearance: 40, defaultColor: 'retro_orange', defaultRoof: 'none',
+  },
+  {
+    id: 'citroen_2cv', name: '1980 Citroën 2CV', subtitle: 'Lightweight Classic (FWD)', era: '1980s · FWD',
+    description: 'Lightweight soft-suspension classic. Standard 2CV is front-wheel drive, not rear-wheel drive.',
+    wheelbase: 2.40, trackWidth: 1.42, powerRating: 29, gripFactor: 62, groundClearance: 25, defaultColor: 'vintage_cream', defaultRoof: 'none',
+  },
+  {
+    id: 'impreza_wrx', name: '2002 Subaru Impreza WRX', subtitle: 'All-Wheel-Drive Rally Car', era: '1990s+ · AWD',
+    description: 'Turbo rally sedan with all-wheel-drive traction and road-rally suspension.',
+    wheelbase: 2.52, trackWidth: 1.54, powerRating: 227, gripFactor: 95, groundClearance: 62, defaultColor: 'pale_blue', defaultRoof: 'none',
+  },
+  {
+    id: 'lancer_evo', name: '2005 Mitsubishi Lancer Evolution', subtitle: 'All-Wheel-Drive Rally Sedan', era: '1990s+ · AWD',
+    description: 'Wide-track performance sedan with quick steering and strong all-weather traction.',
+    wheelbase: 2.62, trackWidth: 1.58, powerRating: 276, gripFactor: 96, groundClearance: 60, defaultColor: 'vintage_cream', defaultRoof: 'none',
+  },
+  {
+    id: 'landcruiser_80', name: '1995 Toyota Land Cruiser 80', subtitle: 'Full-Size Expedition Wagon', era: '1990s+ · AWD', 
+    description: 'Long-wheelbase expedition wagon with broad cabin, high ride height and heavy-duty trail hardware.',
+    wheelbase: 2.85, trackWidth: 1.62, powerRating: 212, gripFactor: 96, groundClearance: 94, defaultColor: 'forest_green', defaultRoof: 'safari_basket',
+  },
+
   {
     id: 'trail_jeep',
     name: '1964 Willys Scout 4x4',
