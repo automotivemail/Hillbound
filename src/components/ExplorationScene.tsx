@@ -685,6 +685,14 @@ export const ExplorationScene: React.FC<ExplorationSceneProps> = ({
           surfaceDrag = 1.9;
         }
 
+        // Vehicle-specific grip: rally cars and low-slung RWD classics are less capable
+        // on loose dirt/water than high-clearance 4x4s.
+        surfaceGrip *= THREE.MathUtils.clamp(spec.gripFactor / 92, 0.58, 1.08);
+        if (spec.groundClearance < 55 && surface !== 'Dirt Trail') {
+          surfaceGrip *= THREE.MathUtils.clamp(spec.groundClearance / 70, 0.42, 0.82);
+          surfaceDrag *= 1.22;
+        }
+
         // Terrain Slope Gravity Along Vehicle Heading
         const forwardX = Math.sin(phys.heading);
         const forwardZ = Math.cos(phys.heading);
@@ -694,7 +702,9 @@ export const ExplorationScene: React.FC<ExplorationSceneProps> = ({
 
         // Engine Force (Low Range multiplies climbing torque, caps top speed)
         const baseEnginePower = (spec.powerRating / 85) * 16.5;
-        const maxSpeed = phys.lowRange ? 9.5 : 19.5;
+        const powerSpeed = THREE.MathUtils.clamp(spec.powerRating / 95, 0.72, 1.35);
+        const clearanceSpeed = spec.groundClearance < 55 && surface !== 'Dirt Trail' ? 0.68 : 1;
+        const maxSpeed = (phys.lowRange ? 9.5 : 19.5) * powerSpeed * clearanceSpeed;
         const torqueMult = phys.lowRange ? 1.65 : 1.0;
 
         const engineAccel = throttleInput * baseEnginePower * torqueMult * surfaceGrip;
